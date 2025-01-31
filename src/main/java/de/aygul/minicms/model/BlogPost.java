@@ -23,6 +23,6 @@ public class BlogPost {
     private LocalDateTime publicationDate;
     private BlogStatus blogStatus;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Category> categories = new ArrayList<>();
 }
