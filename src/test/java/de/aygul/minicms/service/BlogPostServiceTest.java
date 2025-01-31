@@ -3,7 +3,6 @@ package de.aygul.minicms.service;
 import de.aygul.minicms.model.BlogPost;
 import de.aygul.minicms.model.BlogStatus;
 import de.aygul.minicms.model.Category;
-import de.aygul.minicms.model.CategoryName;
 import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +24,7 @@ class BlogPostServiceTest {
     @DisplayName("createBlog save BlogPost with Draft status")
     void testCreateBlogPostWithDraftStatus() {
 
-        Category validCategory = new Category(1L, CategoryName.TECH, null);
+        Category validCategory = new Category(1L, "Tech", null);
         BlogPost validBlogPost = new BlogPost(null,
                 "Valid Title",
                 "Valid body",

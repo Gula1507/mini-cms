@@ -17,8 +17,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private CategoryName categoryName;
+    private String categoryName;
 
     @ManyToMany(mappedBy = "categories")
     private List<BlogPost> blogPosts = new ArrayList<>();
