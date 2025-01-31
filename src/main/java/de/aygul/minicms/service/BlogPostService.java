@@ -1,7 +1,7 @@
 package de.aygul.minicms.service;
 
 import de.aygul.minicms.model.BlogPost;
-import de.aygul.minicms.model.BlogStatus;
+import de.aygul.minicms.model.BlogPostStatus;
 import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class BlogPostService {
     private final BlogPostRepository blogPostRepository;
 
     public BlogPost createBlog(BlogPost blogPost) {
-        blogPost.setBlogStatus(BlogStatus.DRAFT);
+        blogPost.setBlogPostStatus(BlogPostStatus.DRAFT);
         return blogPostRepository.save(blogPost);
     }
 }

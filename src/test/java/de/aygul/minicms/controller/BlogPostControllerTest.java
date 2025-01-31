@@ -2,7 +2,7 @@ package de.aygul.minicms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.aygul.minicms.model.BlogPost;
-import de.aygul.minicms.model.BlogStatus;
+import de.aygul.minicms.model.BlogPostStatus;
 import de.aygul.minicms.repository.BlogPostRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class BlogPostControllerTest {
                 "This is the content of the blog post.",
                 "Author Name",
                 LocalDateTime.now(),
-                BlogStatus.PUBLISHED,
+                BlogPostStatus.PUBLISHED,
                 List.of());
 
         blogPostRepository.save(blogPost);

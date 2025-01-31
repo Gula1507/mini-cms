@@ -1,7 +1,7 @@
 package de.aygul.minicms.service;
 
 import de.aygul.minicms.model.BlogPost;
-import de.aygul.minicms.model.BlogStatus;
+import de.aygul.minicms.model.BlogPostStatus;
 import de.aygul.minicms.model.Category;
 import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,8 @@ class BlogPostServiceTest {
         when(mockedBlogPostRepository.save(validBlogPost)).thenReturn(validBlogPost);
 
         BlogPost result = blogPostService.createBlog(validBlogPost);
-        BlogStatus actualStatus = result.getBlogStatus();
-        BlogStatus expectedStatus = BlogStatus.DRAFT;
+        BlogPostStatus actualStatus = result.getBlogPostStatus();
+        BlogPostStatus expectedStatus = BlogPostStatus.DRAFT;
 
         assertEquals(expectedStatus, actualStatus);
         verify(mockedBlogPostRepository, times(1)).save(validBlogPost);

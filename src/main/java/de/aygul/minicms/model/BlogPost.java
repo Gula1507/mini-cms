@@ -21,7 +21,7 @@ public class BlogPost {
     private String body;
     private String author;
     private LocalDateTime publicationDate;
-    private BlogStatus blogStatus;
+    private BlogPostStatus blogPostStatus;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Category> categories = new ArrayList<>();
