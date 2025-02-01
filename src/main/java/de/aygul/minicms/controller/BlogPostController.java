@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/blogpost")
@@ -19,5 +21,10 @@ public class BlogPostController {
     public Long createBlog(@RequestBody @Valid BlogPostDTO blogPostDTO)
     {
         return blogPostService.createBlog(blogPostDTO);
+    }
+
+    @GetMapping
+    public List<BlogPostDTO> getAllBlogPosts() {
+        return blogPostService.getAllBlogPosts();
     }
 }

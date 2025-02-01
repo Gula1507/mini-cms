@@ -1,10 +1,7 @@
 package de.aygul.minicms.service;
 
 import de.aygul.minicms.mediator.ApplicationMediator;
-import de.aygul.minicms.model.BlogPost;
-import de.aygul.minicms.model.BlogPostDTO;
-import de.aygul.minicms.model.BlogPostStatus;
-import de.aygul.minicms.model.Category;
+import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,11 @@ public class BlogPostService {
         return blogPost.getId();
     }
 
+    public List<BlogPostDTO> getAllBlogPosts() {
+        List<BlogPost> blogPosts = blogPostRepository.findAll();
+        return blogPosts.stream().map(this::convertToDTO).toList();
+    }
+
     public BlogPost convertToEntity(BlogPostDTO blogPostDTO) {
 
         List<Category> categories = blogPostDTO.getCategoriesDTO().stream()
@@ -38,5 +40,18 @@ public class BlogPostService {
                 LocalDate.now(),
                 BlogPostStatus.DRAFT,
                 categories);
+    }
+
+    public BlogPostDTO convertToDTO(BlogPost blogPost) {
+        List<CategoryDTO> categoryDTOs = blogPost.getCategories().stream()
+                                                 .map(category -> new CategoryDTO(category.getCategoryName()))
+                                                 .toList();
+
+        return new BlogPostDTO(
+                blogPost.getTitle(),
+                blogPost.getBody(),
+                blogPost.getAuthor(),
+                categoryDTOs
+        );
     }
 }
