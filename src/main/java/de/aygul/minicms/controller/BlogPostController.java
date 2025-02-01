@@ -28,4 +28,10 @@ public class BlogPostController {
     public List<BlogPostResponseDTO> getAllBlogPosts() {
         return blogPostService.getAllBlogPosts();
     }
+
+    @GetMapping("/{id}")
+    public BlogPostResponseDTO getBlogPostById(@PathVariable Long id) {
+        return blogPostService.getBlogPostById(id);
+    }
+
 }

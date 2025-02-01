@@ -92,4 +92,19 @@ class BlogPostControllerTest {
                .andExpect(jsonPath("$[0].blogPostStatus").value("PUBLISHED"))
                .andExpect(jsonPath("$[1].blogPostStatus").value("DRAFT"));
     }
+
+    @Test
+    @DisplayName("Should return status 200 and blog post DTO if found")
+    void testGetBlogPostByIdSuccess() throws Exception {
+        BlogPost blogPost = new BlogPost(null, "Valid Title", "Valid Body", "Valid Author", LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>());
+        blogPostRepository.save(blogPost);
+        Long existingId = blogPost.getId(); // ID des gespeicherten Blogposts
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/blogpost/{id}", existingId))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(existingId))
+               .andExpect(jsonPath("$.title").value("Valid Title"))
+               .andExpect(jsonPath("$.body").value("Valid Body"))
+               .andExpect(jsonPath("$.author").value("Valid Author"));
+    }
 }
