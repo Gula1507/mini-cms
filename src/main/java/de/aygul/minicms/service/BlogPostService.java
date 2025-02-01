@@ -16,41 +16,44 @@ public class BlogPostService {
     private final BlogPostRepository blogPostRepository;
     private final ApplicationMediator applicationMediator;
 
-    public Long createBlog(BlogPostDTO blogPostDTO) {
-        BlogPost blogPost = convertToEntity(blogPostDTO);
+    public Long createBlogPost(BlogPostRequestDTO blogPostRequestDTO) {
+        BlogPost blogPost = convertToEntity(blogPostRequestDTO);
         blogPostRepository.save(blogPost);
         return blogPost.getId();
     }
 
-    public List<BlogPostDTO> getAllBlogPosts() {
+    public List<BlogPostResponseDTO> getAllBlogPosts() {
         List<BlogPost> blogPosts = blogPostRepository.findAll();
-        return blogPosts.stream().map(this::convertToDTO).toList();
+        return blogPosts.stream().map(this::convertToResponseDTO).toList();
     }
 
-    public BlogPost convertToEntity(BlogPostDTO blogPostDTO) {
+    public BlogPost convertToEntity(BlogPostRequestDTO blogPostRequestDTO) {
 
-        List<Category> categories = blogPostDTO.getCategoriesDTO().stream()
-                                               .map(categoryDTO -> applicationMediator.resolveCategoryByName(categoryDTO.getCategoryName()))
-                                               .toList();
+        List<Category> categories = blogPostRequestDTO.getCategoriesDTO().stream()
+                                                      .map(categoryDTO -> applicationMediator.resolveCategoryByName(categoryDTO.getCategoryName()))
+                                                      .toList();
 
         return new BlogPost(null,
-                blogPostDTO.getTitle(),
-                blogPostDTO.getBody(),
-                blogPostDTO.getAuthor(),
+                blogPostRequestDTO.getTitle(),
+                blogPostRequestDTO.getBody(),
+                blogPostRequestDTO.getAuthor(),
                 LocalDate.now(),
                 BlogPostStatus.DRAFT,
                 categories);
     }
 
-    public BlogPostDTO convertToDTO(BlogPost blogPost) {
+    public BlogPostResponseDTO convertToResponseDTO(BlogPost blogPost) {
         List<CategoryDTO> categoryDTOs = blogPost.getCategories().stream()
                                                  .map(category -> new CategoryDTO(category.getCategoryName()))
                                                  .toList();
 
-        return new BlogPostDTO(
+        return new BlogPostResponseDTO(
+                blogPost.getId(),
                 blogPost.getTitle(),
                 blogPost.getBody(),
                 blogPost.getAuthor(),
+                blogPost.getPublicationDate(),
+                blogPost.getBlogPostStatus(),
                 categoryDTOs
         );
     }

@@ -1,6 +1,7 @@
 package de.aygul.minicms.controller;
 
-import de.aygul.minicms.model.BlogPostDTO;
+import de.aygul.minicms.model.BlogPostRequestDTO;
+import de.aygul.minicms.model.BlogPostResponseDTO;
 import de.aygul.minicms.service.BlogPostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ public class BlogPostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Long createBlog(@RequestBody @Valid BlogPostDTO blogPostDTO)
+    public Long createBlog(@RequestBody @Valid BlogPostRequestDTO blogPostRequestDTO)
     {
-        return blogPostService.createBlog(blogPostDTO);
+        return blogPostService.createBlogPost(blogPostRequestDTO);
     }
 
     @GetMapping
-    public List<BlogPostDTO> getAllBlogPosts() {
+    public List<BlogPostResponseDTO> getAllBlogPosts() {
         return blogPostService.getAllBlogPosts();
     }
 }
