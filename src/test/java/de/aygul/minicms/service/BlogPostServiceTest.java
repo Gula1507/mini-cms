@@ -1,5 +1,6 @@
 package de.aygul.minicms.service;
 
+import de.aygul.minicms.exception.BlogPostIdNotFoundException;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
@@ -79,5 +80,15 @@ class BlogPostServiceTest {
         BlogPostResponseDTO responseDTO2 = blogPostResponseDTOs.get(1);
         assertEquals("Title 2", responseDTO2.getTitle());
         assertEquals(BlogPostStatus.PUBLISHED, responseDTO2.getBlogPostStatus());
+    }
+
+
+    @Test
+    @DisplayName("Should throw BlogPostIdNotFoundException when blog post not found by id")
+    void getBlogPostById() {
+        Long nonExistentId = 1L;
+        assertThrows(BlogPostIdNotFoundException.class, () ->
+            blogPostService.getBlogPostById(nonExistentId)
+        );
     }
 }
