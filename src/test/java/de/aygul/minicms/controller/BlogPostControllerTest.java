@@ -3,12 +3,14 @@ package de.aygul.minicms.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,7 +23,7 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -35,10 +37,15 @@ class BlogPostControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @BeforeEach
+    void setUp() {
+        blogPostRepository.deleteAll();
+    }
+
     @Test
-    @DisplayName("createBlog return status 201 and generated ID")
-    void createBlog() throws Exception {
-        BlogPostDTO blogPostDTO = new BlogPostDTO("Valid Title",
+    @DisplayName("createBlogPost return status 201 and generated ID")
+    void createBlogPost() throws Exception {
+        BlogPostRequestDTO blogPostRequestDTO = new BlogPostRequestDTO("Valid Title",
                 "Valid Body",
                 "Valid Author",
                 List.of(new CategoryDTO("Tech")));
@@ -53,8 +60,36 @@ class BlogPostControllerTest {
 
         blogPostRepository.save(blogPost);
         mockMvc.perform(MockMvcRequestBuilders.post("/blogpost").contentType(MediaType.APPLICATION_JSON)
-                                              .content(objectMapper.writeValueAsString(blogPostDTO)))
+                                              .content(objectMapper.writeValueAsString(blogPostRequestDTO)))
                .andExpect(status().isCreated()).andExpect(jsonPath("$").isNumber());
 
+    }
+
+    @Test
+    @DisplayName("getAllBlogPosts should return a list of BlogPostResponseDTOs with correct title and status")
+    void getAllBlogPosts() throws Exception {
+        BlogPost blogPost1 = new BlogPost(null,
+                "Title 1",
+                "Body 1",
+                "Author 1",
+                LocalDate.now(),
+                BlogPostStatus.PUBLISHED,
+                List.of(new Category(null, "Tech", new ArrayList<>())));
+        BlogPost blogPost2 = new BlogPost(null,
+                "Title 2",
+                "Body 2",
+                "Author 2",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                List.of(new Category(null, "Science", new ArrayList<>())));
+
+        blogPostRepository.save(blogPost1);
+        blogPostRepository.save(blogPost2);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/blogpost")).andExpect(status().isOk())
+               .andExpect(jsonPath("$").isArray()).andExpect(jsonPath("$[0].title").value("Title 1"))
+               .andExpect(jsonPath("$[1].title").value("Title 2"))
+               .andExpect(jsonPath("$[0].blogPostStatus").value("PUBLISHED"))
+               .andExpect(jsonPath("$[1].blogPostStatus").value("DRAFT"));
     }
 }
