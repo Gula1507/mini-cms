@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,11 @@ public class BlogPost {
     private String title;
     private String body;
     private String author;
-    private LocalDateTime publicationDate;
+
+    @Column(columnDefinition = "DATE")
+    private LocalDate publicationDate;
+
+    @Enumerated(EnumType.STRING)
     private BlogPostStatus blogPostStatus;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
