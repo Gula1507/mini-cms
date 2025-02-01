@@ -1,10 +1,8 @@
 package de.aygul.minicms.service;
 
-import de.aygul.minicms.model.BlogPost;
-import de.aygul.minicms.model.BlogStatus;
-import de.aygul.minicms.model.Category;
+import de.aygul.minicms.mediator.ApplicationMediator;
+import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,33 +11,31 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RequiredArgsConstructor
+
 class BlogPostServiceTest {
 
-    BlogPostRepository mockedBlogPostRepository = mock(BlogPostRepository.class);
-
-    BlogPostService blogPostService = new BlogPostService(mockedBlogPostRepository);
+    private final BlogPostRepository mockedBlogPostRepository = mock(BlogPostRepository.class);
+    private final ApplicationMediator mockedMediator = mock(ApplicationMediator.class);
+    BlogPostService blogPostService=new BlogPostService(mockedBlogPostRepository,mockedMediator);
 
     @Test
-    @DisplayName("createBlog save BlogPost with Draft status")
+    @DisplayName("Should create a blog post and return its ID")
     void testCreateBlogPostWithDraftStatus() {
 
-        Category validCategory = new Category(1L, "Tech", null);
-        BlogPost validBlogPost = new BlogPost(null,
-                "Valid Title",
-                "Valid body",
+        BlogPostDTO blogPostDTO = new BlogPostDTO("Valid Title",
+                "Valid Body",
                 "Valid Author",
-                null,
-                null,
-                List.of(validCategory));
+                List.of(new CategoryDTO("Tech")));
 
-        when(mockedBlogPostRepository.save(validBlogPost)).thenReturn(validBlogPost);
+        when(mockedBlogPostRepository.save(any(BlogPost.class))).thenAnswer(invocation -> {
+            BlogPost savedPost = invocation.getArgument(0);
+            savedPost.setId(1L);
+            return savedPost;
+        });
 
-        BlogPost result = blogPostService.createBlog(validBlogPost);
-        BlogStatus actualStatus = result.getBlogStatus();
-        BlogStatus expectedStatus = BlogStatus.DRAFT;
-
-        assertEquals(expectedStatus, actualStatus);
-        verify(mockedBlogPostRepository, times(1)).save(validBlogPost);
+        blogPostService.convertToEntity(blogPostDTO);
+        Long result = blogPostService.createBlog(blogPostDTO);
+        assertEquals(1L, result);
+        verify(mockedBlogPostRepository, times(1)).save(any(BlogPost.class));
     }
 }
