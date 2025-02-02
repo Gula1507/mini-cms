@@ -95,4 +95,11 @@ public class BlogPostService {
                                 .map(this::convertToResponseDTO)
                                 .toList();
     }
+
+    public void updateBlogPostStatus(Long id, BlogPostStatus blogPostStatus) {
+        BlogPost existingBlogPost = blogPostRepository.findById(id)
+                                                      .orElseThrow(() -> new BlogPostIdNotFoundException(id));
+        existingBlogPost.setBlogPostStatus(blogPostStatus);
+        blogPostRepository.save(existingBlogPost);
+    }
 }

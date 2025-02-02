@@ -2,6 +2,7 @@ package de.aygul.minicms.controller;
 
 import de.aygul.minicms.model.BlogPostRequestDTO;
 import de.aygul.minicms.model.BlogPostResponseDTO;
+import de.aygul.minicms.model.BlogPostStatus;
 import de.aygul.minicms.service.BlogPostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,12 @@ public class BlogPostController {
     @GetMapping("/category/{categoryName}")
     public List<BlogPostResponseDTO> getBlogPostsByCategory(@PathVariable String categoryName) {
         return blogPostService.getBlogPostsByCategory(categoryName);
+    }
+
+    @PatchMapping("/{id}/status")
+    public void updateBlogPostStatus(@PathVariable Long id, @RequestBody
+                                                     BlogPostStatus blogPostStatus
+                                                     ) {
+      blogPostService.updateBlogPostStatus(id, blogPostStatus);
     }
 }
