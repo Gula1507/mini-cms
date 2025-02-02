@@ -13,4 +13,10 @@ public class GlobalExceptionHandler {
     public ErrorMessage handleBlogPostNotFound(BlogPostIdNotFoundException ex) {
         return new ErrorMessage(ex.getMessage());
     }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorMessage handleCategoryNotFound(CategoryNotFoundException categoryNotFoundException) {
+        return new ErrorMessage(categoryNotFoundException.getMessage());
+    }
 }

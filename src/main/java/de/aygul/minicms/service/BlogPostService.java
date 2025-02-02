@@ -1,6 +1,7 @@
 package de.aygul.minicms.service;
 
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
+import de.aygul.minicms.exception.CategoryNotFoundException;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
@@ -81,5 +82,17 @@ public class BlogPostService {
                 blogPost.getPublicationDate(),
                 blogPost.getBlogPostStatus(),
                 categoryDTOs);
+    }
+
+    public List<BlogPostResponseDTO> getBlogPostsByCategory(String categoryName) {
+        List<BlogPost> filteredBlogPosts = blogPostRepository.findByCategories_CategoryNameIgnoreCase(categoryName);
+
+        if (filteredBlogPosts.isEmpty()) {
+            throw new CategoryNotFoundException("There is no category with name: " + categoryName);
+        }
+
+        return filteredBlogPosts.stream()
+                                .map(this::convertToResponseDTO)
+                                .toList();
     }
 }
