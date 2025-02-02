@@ -1,4 +1,4 @@
-package de.aygul.minicms.service;
+package de.aygul.minicms.repository;
 
 import de.aygul.minicms.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
