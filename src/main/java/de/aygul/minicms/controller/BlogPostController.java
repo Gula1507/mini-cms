@@ -45,4 +45,9 @@ public class BlogPostController {
                                               @RequestParam(required = false) String body) {
         return blogPostService.updateBlogPostPartial(id, title,body);
     }
+
+    @GetMapping("/category/{categoryName}")
+    public List<BlogPostResponseDTO> getBlogPostsByCategory(@PathVariable String categoryName) {
+        return blogPostService.getBlogPostsByCategory(categoryName);
+    }
 }
