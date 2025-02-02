@@ -12,6 +12,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMessage handleException(Exception exception) {
+        logger.error(exception.getMessage(), exception);
+        return new ErrorMessage("Internal Server Error");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleHttpMessageNotReadableException(HttpMessageNotReadableException httpMessageNotReadableException) {
+logger.warn(httpMessageNotReadableException.getMessage(),httpMessageNotReadableException);
+        return new ErrorMessage("Invalid request body.");
+    }
+
     @ExceptionHandler(BlogPostIdNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorMessage handleBlogPostNotFound(BlogPostIdNotFoundException blogPostIdNotFoundException) {
