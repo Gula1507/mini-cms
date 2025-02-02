@@ -19,4 +19,10 @@ public class GlobalExceptionHandler {
     public ErrorMessage handleCategoryNotFound(CategoryNotFoundException categoryNotFoundException) {
         return new ErrorMessage(categoryNotFoundException.getMessage());
     }
+
+    @ExceptionHandler(CategoryAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorMessage handleCategoryExist(CategoryAlreadyExistException categoryAlreadyExistException) {
+        return new ErrorMessage(categoryAlreadyExistException.getMessage());
+    }
 }
