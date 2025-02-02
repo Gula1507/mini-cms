@@ -34,4 +34,15 @@ public class BlogPostController {
         return blogPostService.getBlogPostById(id);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBlogPost(@PathVariable Long id) {
+       blogPostService.deleteBlogPost(id);
+    }
+
+    @PatchMapping("/{id}")
+    public BlogPostResponseDTO updateBlogPostPartial(@PathVariable Long id, @RequestParam(required = false) String title,
+                                              @RequestParam(required = false) String body) {
+        return blogPostService.updateBlogPostPartial(id, title,body);
+    }
 }
