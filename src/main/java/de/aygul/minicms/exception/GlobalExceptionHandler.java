@@ -47,4 +47,11 @@ logger.warn(httpMessageNotReadableException.getMessage(),httpMessageNotReadableE
         logger.warn(categoryAlreadyExistException.getMessage(), categoryAlreadyExistException);
         return new ErrorMessage(categoryAlreadyExistException.getMessage());
     }
+
+    @ExceptionHandler(CategoryNotEmptyException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorMessage handleCategoryExist(CategoryNotEmptyException categoryNotEmptyException) {
+        logger.warn(categoryNotEmptyException.getMessage(), categoryNotEmptyException);
+        return new ErrorMessage(categoryNotEmptyException.getMessage());
+    }
 }
