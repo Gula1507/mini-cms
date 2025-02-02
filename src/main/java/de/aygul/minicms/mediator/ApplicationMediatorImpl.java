@@ -1,7 +1,7 @@
 package de.aygul.minicms.mediator;
 
 import de.aygul.minicms.model.Category;
-import de.aygul.minicms.service.CategoryRepository;
+import de.aygul.minicms.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
