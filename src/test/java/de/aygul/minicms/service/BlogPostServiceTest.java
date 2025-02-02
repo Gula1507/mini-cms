@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -97,5 +98,33 @@ class BlogPostServiceTest {
         when(mockedBlogPostRepository.existsById(postId)).thenReturn(true);
         blogPostService.deleteBlogPost(postId);
         verify(mockedBlogPostRepository, times(1)).deleteById(postId);
+    }
+
+    @Test
+    void updateBlogPostPartial() {
+
+        BlogPost existingBlogPost = new BlogPost(1L,
+                "Valid Title",
+                "Valid Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>());
+
+        BlogPostResponseDTO expectedResponseDTO = new BlogPostResponseDTO(1L,
+                "New Title",
+                "New Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>());
+
+        when(mockedBlogPostRepository.findById(1L)).thenReturn(Optional.of(existingBlogPost));
+        when(mockedBlogPostRepository.save(existingBlogPost)).thenReturn(existingBlogPost);
+
+        BlogPostResponseDTO result = blogPostService.updateBlogPostPartial(1L, "New Title", "New Body");
+
+        assertEquals(expectedResponseDTO, result);
+
     }
 }

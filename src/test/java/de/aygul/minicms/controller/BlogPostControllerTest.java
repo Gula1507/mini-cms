@@ -16,14 +16,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
+
 import java.time.LocalDate;
 import java.util.ArrayList;
+
 import java.util.List;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -87,9 +90,8 @@ class BlogPostControllerTest {
         blogPostRepository.save(blogPost1);
         blogPostRepository.save(blogPost2);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/blogpost")).andExpect(status().isOk())
-               .andExpect(jsonPath("$").isArray()).andExpect(jsonPath("$[0].title").value("Title 1"))
-               .andExpect(jsonPath("$[1].title").value("Title 2"))
+        mockMvc.perform(get("/blogpost")).andExpect(status().isOk()).andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$[0].title").value("Title 1")).andExpect(jsonPath("$[1].title").value("Title 2"))
                .andExpect(jsonPath("$[0].blogPostStatus").value("PUBLISHED"))
                .andExpect(jsonPath("$[1].blogPostStatus").value("DRAFT"));
     }
@@ -97,22 +99,54 @@ class BlogPostControllerTest {
     @Test
     @DisplayName("Should return status 200 and blog post DTO if found")
     void testGetBlogPostByIdSuccess() throws Exception {
-        BlogPost blogPost = new BlogPost(null, "Valid Title", "Valid Body", "Valid Author", LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>());
+        BlogPost blogPost = new BlogPost(null,
+                "Valid Title",
+                "Valid Body",
+                "Valid Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>());
         blogPostRepository.save(blogPost);
         Long existingId = blogPost.getId(); // ID des gespeicherten Blogposts
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/blogpost/{id}", existingId))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.id").value(existingId))
-               .andExpect(jsonPath("$.title").value("Valid Title"))
-               .andExpect(jsonPath("$.body").value("Valid Body"))
-               .andExpect(jsonPath("$.author").value("Valid Author"));
+        mockMvc.perform(get("/blogpost/{id}", existingId)).andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(existingId)).andExpect(jsonPath("$.title").value("Valid Title"))
+               .andExpect(jsonPath("$.body").value("Valid Body")).andExpect(jsonPath("$.author").value("Valid Author"));
     }
 
     @Test
     @DisplayName("deleteBlogPost returns 404 when blog post does not exist")
     void deleteBlogPost_notFound() throws Exception {
-        mockMvc.perform(delete("/blogpost/{id}", 999L))
-               .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/blogpost/{id}", 999L)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("updateBlogPostPartial return BlogPost with updated title and body")
+    void updateBlogPostPartialSuccess() throws Exception {
+
+        BlogPostResponseDTO blogPostResponseDTO = new BlogPostResponseDTO(1L,
+                "New Title",
+                "New Body",
+                "Valid Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>());
+
+        String title = "New Title";
+        String body = "New Body";
+
+        BlogPost blogPost = new BlogPost(null,
+                "Valid Title",
+                "Valid Body",
+                "Valid Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>());
+
+        blogPostRepository.save(blogPost);
+
+        mockMvc.perform(patch("/blogpost/1").param("title", title)  // Verwende param() für URL-Parameter
+                                            .param("body", body)).andExpect(status().isOk())
+               .andExpect(content().json(objectMapper.writeValueAsString(blogPostResponseDTO)));
     }
 }

@@ -40,6 +40,21 @@ public class BlogPostService {
         blogPostRepository.deleteById(id);
     }
 
+    public BlogPostResponseDTO updateBlogPostPartial(Long id, String newTitle, String newBody) {
+        BlogPost existingBlogPost = blogPostRepository.findById(id)
+                                                      .orElseThrow(() -> new BlogPostIdNotFoundException(id));
+
+        if (newTitle != null && !newTitle.isBlank()) {
+            existingBlogPost.setTitle(newTitle);
+        }
+        if (newBody != null && !newBody.isBlank()) {
+            existingBlogPost.setBody(newBody);
+        }
+
+        BlogPost updatedBlogPost = blogPostRepository.save(existingBlogPost);
+        return convertToResponseDTO(updatedBlogPost);
+    }
+
     public BlogPost convertToEntity(BlogPostRequestDTO blogPostRequestDTO) {
 
         List<Category> categories = blogPostRequestDTO.getCategoriesDTO().stream()
