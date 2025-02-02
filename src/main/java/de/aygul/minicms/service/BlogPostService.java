@@ -33,6 +33,13 @@ public class BlogPostService {
         return convertToResponseDTO(blogPost);
     }
 
+    public void deleteBlogPost(Long id) {
+        if (!blogPostRepository.existsById(id)) {
+            throw new BlogPostIdNotFoundException(id);
+        }
+        blogPostRepository.deleteById(id);
+    }
+
     public BlogPost convertToEntity(BlogPostRequestDTO blogPostRequestDTO) {
 
         List<Category> categories = blogPostRequestDTO.getCategoriesDTO().stream()

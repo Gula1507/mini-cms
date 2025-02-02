@@ -87,8 +87,15 @@ class BlogPostServiceTest {
     @DisplayName("Should throw BlogPostIdNotFoundException when blog post not found by id")
     void getBlogPostById() {
         Long nonExistentId = 1L;
-        assertThrows(BlogPostIdNotFoundException.class, () ->
-            blogPostService.getBlogPostById(nonExistentId)
-        );
+        assertThrows(BlogPostIdNotFoundException.class, () -> blogPostService.getBlogPostById(nonExistentId));
+    }
+
+    @Test
+    @DisplayName("deleteBlogPost should delete post when id exists")
+    void deleteBlogPost_Success() {
+        Long postId = 1L;
+        when(mockedBlogPostRepository.existsById(postId)).thenReturn(true);
+        blogPostService.deleteBlogPost(postId);
+        verify(mockedBlogPostRepository, times(1)).deleteById(postId);
     }
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -106,5 +107,12 @@ class BlogPostControllerTest {
                .andExpect(jsonPath("$.title").value("Valid Title"))
                .andExpect(jsonPath("$.body").value("Valid Body"))
                .andExpect(jsonPath("$.author").value("Valid Author"));
+    }
+
+    @Test
+    @DisplayName("deleteBlogPost returns 404 when blog post does not exist")
+    void deleteBlogPost_notFound() throws Exception {
+        mockMvc.perform(delete("/blogpost/{id}", 999L))
+               .andExpect(status().isNotFound());
     }
 }
