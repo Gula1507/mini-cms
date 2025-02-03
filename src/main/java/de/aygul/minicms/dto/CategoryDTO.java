@@ -1,4 +1,4 @@
-package de.aygul.minicms.model;
+package de.aygul.minicms.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

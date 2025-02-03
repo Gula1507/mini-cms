@@ -1,5 +1,8 @@
 package de.aygul.minicms.service;
 
+import de.aygul.minicms.dto.BlogPostRequestDTO;
+import de.aygul.minicms.dto.BlogPostResponseDTO;
+import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.model.*;
