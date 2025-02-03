@@ -3,6 +3,9 @@
 ## Beschreibung
 Eine RESTful API zur Verwaltung von Blog-Beiträgen und Kategorien. Diese API unterstützt CRUD-Operationen für Blogbeiträge und Kategorien.
 
+## API Documentation
+Die vollständige OpenAPI-Dokumentation ist [hier](docs/openapi.json) verfügbar.
+
 ## Endpunkte
 
 ### Kategorien
@@ -28,7 +31,7 @@ Eine RESTful API zur Verwaltung von Blog-Beiträgen und Kategorien. Diese API un
   Löscht einen Blogbeitrag anhand der ID.
 
 - **PATCH /blogpost/{id}**  
-  Aktualisiert teilweise einen Blogbeitrag.
+  Aktualisiert einen Blogbeitrag mit neuen Titel oder neuer Inhalt.
 
 - **PATCH /blogpost/{id}/status**  
   Aktualisiert den Status eines Blogbeitrags.
@@ -52,20 +55,42 @@ Eine RESTful API zur Verwaltung von Blog-Beiträgen und Kategorien. Diese API un
 
 ## Datenmodelle
 
+### BlogPost
+
+Repräsentiert einen Blogbeitrag.
+
+- **id** (Long) – Eindeutige Identifikation (automatisch generiert).
+- **title** (String) – Titel des Blogbeitrags.
+- **body** (String) – Inhalt des Blogbeitrags.
+- **author** (String) – Autor des Blogbeitrags.
+- **publicationDate** (LocalDate) – Veröffentlichungsdatum.
+- **blogPostStatus** (Enum: DRAFT, PUBLISHED, ARCHIVED) – Status des Blogbeitrags.
+- **categories** (Liste von CategoryDTO) – Zugehörige Kategorien.
+
+### Category
+
+Repräsentiert eine Kategorie.
+
+- **id** (Long) – Eindeutige Identifikation (automatisch generiert).
+- **categoryName** (String) – Name der Kategorie.
+- **blogPosts** (Liste von BlogPost) – Zugehörige Blogbeiträge.
+
+## DTOs
+
 - **CategoryDTO**
-    - `categoryName` (string, 3–255 Zeichen)
+  - `categoryName` (String)
 
 - **BlogPostRequestDTO**
-    - `title` (string, 5–100 Zeichen)
-    - `body` (string, 10+ Zeichen)
-    - `author` (string, 3+ Zeichen)
-    - `categoriesDTO` (Array von `CategoryDTO`)
+  - `title` (String)
+  - `body` (String)
+  - `author` (String)
+  - `categoriesDTO` (Array von `CategoryDTO`)
 
 - **BlogPostResponseDTO**
-    - `id` (integer)
-    - `title` (string)
-    - `body` (string)
-    - `author` (string)
-    - `publicationDate` (string, Datum)
-    - `blogPostStatus` (enum: DRAFT, PUBLISHED, ARCHIVED)
-    - `categoriesDTO` (Array von `CategoryDTO`)
+  - `id` (Long)
+  - `title` (String)
+  - `body` (String)
+  - `author` (String)
+  - `publicationDate` (String)
+  - `blogPostStatus` (Enum: DRAFT, PUBLISHED, ARCHIVED)
+  - `categoriesDTO` (Array von `CategoryDTO`)
