@@ -1,7 +1,7 @@
 package de.aygul.minicms.controller;
 
 
-import de.aygul.minicms.model.CategoryDTO;
+import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

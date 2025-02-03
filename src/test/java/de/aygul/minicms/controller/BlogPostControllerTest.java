@@ -1,6 +1,9 @@
 package de.aygul.minicms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.aygul.minicms.dto.BlogPostRequestDTO;
+import de.aygul.minicms.dto.BlogPostResponseDTO;
+import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
 import org.junit.jupiter.api.BeforeEach;

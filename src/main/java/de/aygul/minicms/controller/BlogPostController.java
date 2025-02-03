@@ -1,7 +1,7 @@
 package de.aygul.minicms.controller;
 
-import de.aygul.minicms.model.BlogPostRequestDTO;
-import de.aygul.minicms.model.BlogPostResponseDTO;
+import de.aygul.minicms.dto.BlogPostRequestDTO;
+import de.aygul.minicms.dto.BlogPostResponseDTO;
 import de.aygul.minicms.model.BlogPostStatus;
 import de.aygul.minicms.service.BlogPostService;
 import jakarta.validation.Valid;

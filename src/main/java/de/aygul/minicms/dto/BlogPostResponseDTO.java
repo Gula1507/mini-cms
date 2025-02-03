@@ -1,5 +1,6 @@
-package de.aygul.minicms.model;
+package de.aygul.minicms.dto;
 
+import de.aygul.minicms.model.BlogPostStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

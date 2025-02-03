@@ -4,7 +4,7 @@ import de.aygul.minicms.exception.CategoryAlreadyExistException;
 import de.aygul.minicms.exception.CategoryNotEmptyException;
 import de.aygul.minicms.exception.CategoryNotFoundException;
 import de.aygul.minicms.model.Category;
-import de.aygul.minicms.model.CategoryDTO;
+import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
