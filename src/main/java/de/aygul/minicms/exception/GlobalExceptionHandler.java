@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 
 @RestControllerAdvice
@@ -53,5 +56,19 @@ logger.warn(httpMessageNotReadableException.getMessage(),httpMessageNotReadableE
     public ErrorMessage handleCategoryExist(CategoryNotEmptyException categoryNotEmptyException) {
         logger.warn(categoryNotEmptyException.getMessage(), categoryNotEmptyException);
         return new ErrorMessage(categoryNotEmptyException.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
+        logger.warn(methodArgumentNotValidException.getMessage(), methodArgumentNotValidException);
+        List<String> errorMessages = methodArgumentNotValidException.getBindingResult()
+                                              .getFieldErrors()
+                                              .stream()
+                                              .map(fieldError -> fieldError.getField() + ": "
+                                                                 + fieldError.getDefaultMessage())
+                                              .toList();
+        String errorMessage = String.join(", ", errorMessages);
+        return new ErrorMessage("Validation failed: " + errorMessage);
     }
 }
