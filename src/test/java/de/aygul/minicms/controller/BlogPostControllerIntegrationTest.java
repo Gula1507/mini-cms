@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class BlogPostControllerTest {
+class BlogPostControllerIntegrationTest {
     @Autowired
     MockMvc mockMvc;
 
@@ -51,7 +51,7 @@ class BlogPostControllerTest {
 
     @Test
     @DisplayName("createBlogPost return status 201 and generated ID")
-    void createBlogPost() throws Exception {
+    void createBlogPostSuccess() throws Exception {
         BlogPostRequestDTO blogPostRequestDTO = new BlogPostRequestDTO("Valid Title",
                 "Valid Body",
                 "Valid Author",
@@ -74,7 +74,7 @@ class BlogPostControllerTest {
 
     @Test
     @DisplayName("getAllBlogPosts should return a list of BlogPostResponseDTOs with correct title and status")
-    void getAllBlogPosts() throws Exception {
+    void getAllBlogPostsSuccess() throws Exception {
         BlogPost blogPost1 = new BlogPost(null,
                 "Title 1",
                 "Body 1",
@@ -110,7 +110,7 @@ class BlogPostControllerTest {
                 BlogPostStatus.DRAFT,
                 new ArrayList<>());
         blogPostRepository.save(blogPost);
-        Long existingId = blogPost.getId(); // ID des gespeicherten Blogposts
+        Long existingId = blogPost.getId();
 
         mockMvc.perform(get("/blogpost/{id}", existingId)).andExpect(status().isOk())
                .andExpect(jsonPath("$.id").value(existingId)).andExpect(jsonPath("$.title").value("Valid Title"))
@@ -119,7 +119,7 @@ class BlogPostControllerTest {
 
     @Test
     @DisplayName("deleteBlogPost returns 404 when blog post does not exist")
-    void deleteBlogPost_notFound() throws Exception {
+    void deleteBlogPostWhenNotExist() throws Exception {
         mockMvc.perform(delete("/blogpost/{id}", 999L)).andExpect(status().isNotFound());
     }
 
@@ -148,7 +148,7 @@ class BlogPostControllerTest {
 
         blogPostRepository.save(blogPost);
 
-        mockMvc.perform(patch("/blogpost/1").param("title", title)  // Verwende param() für URL-Parameter
+        mockMvc.perform(patch("/blogpost/1").param("title", title)
                                             .param("body", body)).andExpect(status().isOk())
                .andExpect(content().json(objectMapper.writeValueAsString(blogPostResponseDTO)));
     }
