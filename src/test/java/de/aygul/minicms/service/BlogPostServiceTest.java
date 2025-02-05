@@ -27,7 +27,7 @@ class BlogPostServiceTest {
 
     @Test
     @DisplayName("Should create a blog post and return its ID")
-    void testCreateBlogPostWithDraftStatus() {
+    void testCreateBlogPostSuccess() {
 
         BlogPostRequestDTO blogPostRequestDTO = new BlogPostRequestDTO("Valid Title",
                 "Valid Body",
@@ -48,7 +48,7 @@ class BlogPostServiceTest {
 
     @Test
     @DisplayName("getAllBlogPosts should return a list of BlogPostResponseDTOs with correct status")
-    void getAllBlogPosts() {
+    void getAllBlogPostsSuccess() {
         Category category1 = new Category(1L, "Tech", new ArrayList<>());
         Category category2 = new Category(2L, "Science", new ArrayList<>());
 
@@ -89,7 +89,7 @@ class BlogPostServiceTest {
 
     @Test
     @DisplayName("Should throw BlogPostIdNotFoundException when blog post not found by id")
-    void getBlogPostById() {
+    void getBlogPostByIdThrowsException() {
         Long nonExistentId = 1L;
         assertThrows(BlogPostIdNotFoundException.class, () -> blogPostService.getBlogPostById(nonExistentId));
     }
@@ -104,7 +104,8 @@ class BlogPostServiceTest {
     }
 
     @Test
-    void updateBlogPostPartial() {
+    @DisplayName("updateBlogPostPartial updates title and body successfull")
+    void updateBlogPostPartialSuccess() {
 
         BlogPost existingBlogPost = new BlogPost(1L,
                 "Valid Title",
