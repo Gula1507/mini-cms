@@ -21,12 +21,12 @@ public class BlogPost {
     private String body;
     private String author;
 
-    @Column(columnDefinition = "DATE")
+    @Column
     private LocalDate publicationDate;
 
     @Enumerated(EnumType.STRING)
     private BlogPostStatus blogPostStatus;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany
     private List<Category> categories = new ArrayList<>();
 }
