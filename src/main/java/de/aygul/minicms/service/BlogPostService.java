@@ -58,7 +58,7 @@ public class BlogPostService {
         return convertToResponseDTO(updatedBlogPost);
     }
 
-    private static BlogPostHistory convertBlogPostToHistory(BlogPost existingBlogPost) {
+    public BlogPostHistory convertBlogPostToHistory(BlogPost existingBlogPost) {
         return new BlogPostHistory(null, existingBlogPost.getId(),
                 existingBlogPost.getTitle(),
                 existingBlogPost.getBody(),
@@ -69,7 +69,7 @@ public class BlogPostService {
                 existingBlogPost.getVersion());
     }
 
-    private static BlogPost getUpdatedBlogPost(String newTitle, String newBody, BlogPost existingBlogPost) {
+    public BlogPost getUpdatedBlogPost(String newTitle, String newBody, BlogPost existingBlogPost) {
         BlogPost updatedBlogPost = new BlogPost();
         if (newTitle != null && !newTitle.isBlank()) {
             updatedBlogPost.setTitle(newTitle);
