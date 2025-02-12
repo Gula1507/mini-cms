@@ -6,30 +6,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class BlogPost {
+@Entity
+public class BlogPostHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long blogPostId;
     private String title;
     private String body;
     private String author;
 
+    @Column
     private LocalDate publicationDate;
 
     @Enumerated(EnumType.STRING)
     private BlogPostStatus blogPostStatus;
 
     @ManyToMany
-    private List<Category> categories = new ArrayList<>();
+    private List<Category> categories;
 
     private int version;
-
 
 }
