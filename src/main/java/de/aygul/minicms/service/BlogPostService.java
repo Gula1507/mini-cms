@@ -71,16 +71,10 @@ public class BlogPostService {
 
     public BlogPost getUpdatedBlogPost(String newTitle, String newBody, BlogPost existingBlogPost) {
         BlogPost updatedBlogPost = new BlogPost();
-        if (newTitle != null && !newTitle.isBlank()) {
-            updatedBlogPost.setTitle(newTitle);
-        } else {
-            updatedBlogPost.setTitle(existingBlogPost.getTitle());
-        }
-        if (newBody != null && !newBody.isBlank()) {
-            updatedBlogPost.setBody(newBody);
-        } else {
-            updatedBlogPost.setBody(existingBlogPost.getBody());
-        }
+
+        updatedBlogPost.setTitle(newTitle != null && !newTitle.isBlank() ? newTitle : existingBlogPost.getTitle());
+        updatedBlogPost.setBody(newBody != null && !newBody.isBlank() ? newBody : existingBlogPost.getBody());
+
         updatedBlogPost.setVersion(existingBlogPost.getVersion() + 1);
         updatedBlogPost.setPublicationDate(existingBlogPost.getPublicationDate());
         updatedBlogPost.setBlogPostStatus(existingBlogPost.getBlogPostStatus());
