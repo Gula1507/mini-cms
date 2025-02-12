@@ -27,7 +27,7 @@ public class BlogPostHistory {
     @Enumerated(EnumType.STRING)
     private BlogPostStatus blogPostStatus;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Category> categories;
 
     private int version;

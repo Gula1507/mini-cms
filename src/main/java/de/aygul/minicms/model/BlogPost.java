@@ -26,7 +26,7 @@ public class BlogPost {
     @Enumerated(EnumType.STRING)
     private BlogPostStatus blogPostStatus;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Category> categories = new ArrayList<>();
 
     private int version;
