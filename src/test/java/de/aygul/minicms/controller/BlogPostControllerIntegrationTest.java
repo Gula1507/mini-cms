@@ -61,9 +61,7 @@ class BlogPostControllerIntegrationTest {
                 "Valid Title",
                 "Valid Body",
                 "Valid Author",
-                LocalDate.now(),
-                null,
-                List.of(new Category(null, "Tech", new ArrayList<>())));
+                LocalDate.now(), null, List.of(new Category(null, "Tech", new ArrayList<>())), 1);
 
         blogPostRepository.save(blogPost);
         mockMvc.perform(MockMvcRequestBuilders.post("/blogpost").contentType(MediaType.APPLICATION_JSON)
@@ -75,20 +73,18 @@ class BlogPostControllerIntegrationTest {
     @Test
     @DisplayName("getAllBlogPosts should return a list of BlogPostResponseDTOs with correct title and status")
     void getAllBlogPostsSuccess() throws Exception {
+        Category category = new Category(null, "Tech", new ArrayList<>());
+        Category category2 = new Category(null, "Tech", new ArrayList<>());
         BlogPost blogPost1 = new BlogPost(null,
                 "Title 1",
                 "Body 1",
                 "Author 1",
-                LocalDate.now(),
-                BlogPostStatus.PUBLISHED,
-                List.of(new Category(null, "Tech", new ArrayList<>())));
+                LocalDate.now(), BlogPostStatus.PUBLISHED, List.of(category), 1);
         BlogPost blogPost2 = new BlogPost(null,
                 "Title 2",
                 "Body 2",
                 "Author 2",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                List.of(new Category(null, "Science", new ArrayList<>())));
+                LocalDate.now(), BlogPostStatus.DRAFT, List.of(category2), 1);
 
         blogPostRepository.save(blogPost1);
         blogPostRepository.save(blogPost2);
@@ -106,9 +102,7 @@ class BlogPostControllerIntegrationTest {
                 "Valid Title",
                 "Valid Body",
                 "Valid Author",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                new ArrayList<>());
+                LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
         blogPostRepository.save(blogPost);
         Long existingId = blogPost.getId();
 
@@ -142,9 +136,7 @@ class BlogPostControllerIntegrationTest {
                 "Valid Title",
                 "Valid Body",
                 "Valid Author",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                new ArrayList<>());
+                LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
 
         blogPostRepository.save(blogPost);
 
