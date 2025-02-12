@@ -6,12 +6,14 @@ import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
 import de.aygul.minicms.exception.CategoryNotFoundException;
 import de.aygul.minicms.mediator.ApplicationMediator;
+import de.aygul.minicms.mediator.BlogPostHistoryMediator;
 import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,9 +22,11 @@ public class BlogPostService {
 
     private final BlogPostRepository blogPostRepository;
     private final ApplicationMediator applicationMediator;
+    private final BlogPostHistoryMediator blogPostHistoryMediator;
 
     public Long createBlogPost(BlogPostRequestDTO blogPostRequestDTO) {
         BlogPost blogPost = convertToEntity(blogPostRequestDTO);
+
         blogPostRepository.save(blogPost);
         return blogPost.getId();
     }
@@ -47,16 +51,37 @@ public class BlogPostService {
     public BlogPostResponseDTO updateBlogPostPartial(Long id, String newTitle, String newBody) {
         BlogPost existingBlogPost = blogPostRepository.findById(id)
                                                       .orElseThrow(() -> new BlogPostIdNotFoundException(id));
-
-        if (newTitle != null && !newTitle.isBlank()) {
-            existingBlogPost.setTitle(newTitle);
-        }
-        if (newBody != null && !newBody.isBlank()) {
-            existingBlogPost.setBody(newBody);
-        }
-
-        BlogPost updatedBlogPost = blogPostRepository.save(existingBlogPost);
+        BlogPostHistory blogPostHistory = convertBlogPostToHistory(existingBlogPost);
+        blogPostHistoryMediator.save(blogPostHistory);
+        BlogPost updatedBlogPost = getUpdatedBlogPost(newTitle, newBody, existingBlogPost);
+        blogPostRepository.save(updatedBlogPost);
         return convertToResponseDTO(updatedBlogPost);
+    }
+
+    public BlogPostHistory convertBlogPostToHistory(BlogPost existingBlogPost) {
+        return new BlogPostHistory(null, existingBlogPost.getId(),
+                existingBlogPost.getTitle(),
+                existingBlogPost.getBody(),
+                existingBlogPost.getAuthor(),
+                existingBlogPost.getPublicationDate(),
+                existingBlogPost.getBlogPostStatus(),
+                new ArrayList<>(existingBlogPost.getCategories()),
+                existingBlogPost.getVersion());
+    }
+
+    public BlogPost getUpdatedBlogPost(String newTitle, String newBody, BlogPost existingBlogPost) {
+        BlogPost updatedBlogPost = new BlogPost();
+
+        updatedBlogPost.setTitle(newTitle != null && !newTitle.isBlank() ? newTitle : existingBlogPost.getTitle());
+        updatedBlogPost.setBody(newBody != null && !newBody.isBlank() ? newBody : existingBlogPost.getBody());
+
+        updatedBlogPost.setVersion(existingBlogPost.getVersion() + 1);
+        updatedBlogPost.setPublicationDate(existingBlogPost.getPublicationDate());
+        updatedBlogPost.setBlogPostStatus(existingBlogPost.getBlogPostStatus());
+        updatedBlogPost.setCategories(existingBlogPost.getCategories());
+        updatedBlogPost.setAuthor(existingBlogPost.getAuthor());
+        updatedBlogPost.setId(existingBlogPost.getId());
+        return updatedBlogPost;
     }
 
     public BlogPost convertToEntity(BlogPostRequestDTO blogPostRequestDTO) {
@@ -71,7 +96,8 @@ public class BlogPostService {
                 blogPostRequestDTO.getAuthor(),
                 LocalDate.now(),
                 BlogPostStatus.DRAFT,
-                categories);
+                categories,
+                1);
     }
 
     public BlogPostResponseDTO convertToResponseDTO(BlogPost blogPost) {
@@ -94,9 +120,7 @@ public class BlogPostService {
             throw new CategoryNotFoundException("There is no category with name: " + categoryName);
         }
 
-        return filteredBlogPosts.stream()
-                                .map(this::convertToResponseDTO)
-                                .toList();
+        return filteredBlogPosts.stream().map(this::convertToResponseDTO).toList();
     }
 
     public void updateBlogPostStatus(Long id, BlogPostStatus blogPostStatus) {

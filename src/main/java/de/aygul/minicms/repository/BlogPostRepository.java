@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BlogPostRepository extends JpaRepository <BlogPost, Long>{
+public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
     List<BlogPost> findByCategories_CategoryNameIgnoreCase(String categoryName);
+
 }

@@ -5,6 +5,7 @@ import de.aygul.minicms.dto.BlogPostResponseDTO;
 import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
 import de.aygul.minicms.mediator.ApplicationMediator;
+import de.aygul.minicms.mediator.BlogPostHistoryMediator;
 import de.aygul.minicms.model.*;
 import de.aygul.minicms.repository.BlogPostRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +24,10 @@ class BlogPostServiceTest {
 
     private final BlogPostRepository mockedBlogPostRepository = mock(BlogPostRepository.class);
     private final ApplicationMediator mockedMediator = mock(ApplicationMediator.class);
-    BlogPostService blogPostService = new BlogPostService(mockedBlogPostRepository, mockedMediator);
+    private final BlogPostHistoryMediator blogPostHistoryMediator = mock(BlogPostHistoryMediator.class);
+    BlogPostService blogPostService = new BlogPostService(mockedBlogPostRepository,
+            mockedMediator,
+            blogPostHistoryMediator);
 
     @Test
     @DisplayName("Should create a blog post and return its ID")
@@ -59,16 +63,12 @@ class BlogPostServiceTest {
                 "Title 1",
                 "Body 1",
                 "Author 1",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                List.of(category1));
+                LocalDate.now(), BlogPostStatus.DRAFT, List.of(category1), 1);
         BlogPost blogPost2 = new BlogPost(null,
                 "Title 2",
                 "Body 2",
                 "Author 2",
-                LocalDate.now(),
-                BlogPostStatus.PUBLISHED,
-                List.of(category2));
+                LocalDate.now(), BlogPostStatus.PUBLISHED, List.of(category2), 1);
 
         when(mockedBlogPostRepository.findAll()).thenReturn(List.of(blogPost1, blogPost2));
 
@@ -104,16 +104,14 @@ class BlogPostServiceTest {
     }
 
     @Test
-    @DisplayName("updateBlogPostPartial updates title and body successfull")
+    @DisplayName("updateBlogPostPartial updates title and body successfully")
     void updateBlogPostPartialSuccess() {
 
         BlogPost existingBlogPost = new BlogPost(1L,
                 "Valid Title",
                 "Valid Body",
                 "Author",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                new ArrayList<>());
+                LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
 
         BlogPostResponseDTO expectedResponseDTO = new BlogPostResponseDTO(1L,
                 "New Title",
@@ -130,5 +128,31 @@ class BlogPostServiceTest {
 
         assertEquals(expectedResponseDTO, result);
 
+    }
+
+    @Test
+    @DisplayName("convertBlogPostToHistory creates BlogPostHistory with its parameters")
+    void convertBlogPostToHistory() {
+        BlogPost existingBlogPost = new BlogPost(1L,
+                "Valid Title",
+                "Valid Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>(),
+                1);
+        BlogPostHistory expected = new BlogPostHistory(null,
+                1L,
+                "Valid Title",
+                "Valid Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>(),
+                1);
+
+        BlogPostHistory actual = blogPostService.convertBlogPostToHistory(existingBlogPost);
+
+        assertEquals(expected, actual);
     }
 }
