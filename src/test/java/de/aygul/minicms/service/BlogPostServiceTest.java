@@ -129,4 +129,30 @@ class BlogPostServiceTest {
         assertEquals(expectedResponseDTO, result);
 
     }
+
+    @Test
+    @DisplayName("convertBlogPostToHistory creates BlogPostHistory with its parameters")
+    void convertBlogPostToHistory() {
+        BlogPost existingBlogPost = new BlogPost(1L,
+                "Valid Title",
+                "Valid Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>(),
+                1);
+        BlogPostHistory expected = new BlogPostHistory(null,
+                1L,
+                "Valid Title",
+                "Valid Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>(),
+                1);
+
+        BlogPostHistory actual = blogPostService.convertBlogPostToHistory(existingBlogPost);
+
+        assertEquals(expected, actual);
+    }
 }
