@@ -41,12 +41,21 @@ class BlogPostServiceTest {
                 "Valid Author",
                 List.of(new CategoryDTO("Tech")));
 
+        BlogPost existingBlogPost = new BlogPost(1L,
+                "Valid Title",
+                "Valid Body",
+                "Author",
+                LocalDate.now(),
+                BlogPostStatus.DRAFT,
+                new ArrayList<>(),
+                1);
+
         when(mockedBlogPostRepository.save(any(BlogPost.class))).thenAnswer(invocation -> {
             BlogPost savedPost = invocation.getArgument(0);
             savedPost.setId(1L);
             return savedPost;
         });
-
+        when(mockedMapper.toEntity(blogPostRequestDTO, mockedMediator)).thenReturn(existingBlogPost);
         Long result = blogPostService.createBlogPost(blogPostRequestDTO);
         assertEquals(1L, result);
         verify(mockedBlogPostRepository, times(1)).save(any(BlogPost.class));
