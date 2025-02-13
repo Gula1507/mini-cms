@@ -24,10 +24,9 @@ class BlogPostServiceTest {
 
     private final BlogPostRepository mockedBlogPostRepository = mock(BlogPostRepository.class);
     private final ApplicationMediator mockedMediator = mock(ApplicationMediator.class);
-    private final BlogPostHistoryMediator blogPostHistoryMediator = mock(BlogPostHistoryMediator.class);
+    private final BlogPostHistoryMediator mockedBlogPostHistoryMediator = mock(BlogPostHistoryMediator.class);
     BlogPostService blogPostService = new BlogPostService(mockedBlogPostRepository,
-            mockedMediator,
-            blogPostHistoryMediator);
+            mockedMediator, mockedBlogPostHistoryMediator);
 
     @Test
     @DisplayName("Should create a blog post and return its ID")
@@ -44,7 +43,6 @@ class BlogPostServiceTest {
             return savedPost;
         });
 
-        blogPostService.convertToEntity(blogPostRequestDTO);
         Long result = blogPostService.createBlogPost(blogPostRequestDTO);
         assertEquals(1L, result);
         verify(mockedBlogPostRepository, times(1)).save(any(BlogPost.class));
@@ -62,13 +60,11 @@ class BlogPostServiceTest {
         BlogPost blogPost1 = new BlogPost(null,
                 "Title 1",
                 "Body 1",
-                "Author 1",
-                LocalDate.now(), BlogPostStatus.DRAFT, List.of(category1), 1);
+                "Author 1", LocalDate.now(), BlogPostStatus.DRAFT, List.of(category1), 1);
         BlogPost blogPost2 = new BlogPost(null,
                 "Title 2",
                 "Body 2",
-                "Author 2",
-                LocalDate.now(), BlogPostStatus.PUBLISHED, List.of(category2), 1);
+                "Author 2", LocalDate.now(), BlogPostStatus.PUBLISHED, List.of(category2), 1);
 
         when(mockedBlogPostRepository.findAll()).thenReturn(List.of(blogPost1, blogPost2));
 
@@ -110,8 +106,7 @@ class BlogPostServiceTest {
         BlogPost existingBlogPost = new BlogPost(1L,
                 "Valid Title",
                 "Valid Body",
-                "Author",
-                LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
+                "Author", LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
 
         BlogPostResponseDTO expectedResponseDTO = new BlogPostResponseDTO(1L,
                 "New Title",
@@ -125,34 +120,10 @@ class BlogPostServiceTest {
         when(mockedBlogPostRepository.save(existingBlogPost)).thenReturn(existingBlogPost);
 
         BlogPostResponseDTO result = blogPostService.updateBlogPostPartial(1L, "New Title", "New Body");
-
+        verify(mockedBlogPostHistoryMediator, times(1)).save(any(BlogPostHistory.class));
+        verify(mockedBlogPostRepository, times(1)).save(any(BlogPost.class));
         assertEquals(expectedResponseDTO, result);
 
     }
 
-    @Test
-    @DisplayName("convertBlogPostToHistory creates BlogPostHistory with its parameters")
-    void convertBlogPostToHistory() {
-        BlogPost existingBlogPost = new BlogPost(1L,
-                "Valid Title",
-                "Valid Body",
-                "Author",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                new ArrayList<>(),
-                1);
-        BlogPostHistory expected = new BlogPostHistory(null,
-                1L,
-                "Valid Title",
-                "Valid Body",
-                "Author",
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                new ArrayList<>(),
-                1);
-
-        BlogPostHistory actual = blogPostService.convertBlogPostToHistory(existingBlogPost);
-
-        assertEquals(expected, actual);
-    }
 }
