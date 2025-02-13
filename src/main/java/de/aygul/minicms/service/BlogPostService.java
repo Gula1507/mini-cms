@@ -5,6 +5,7 @@ import de.aygul.minicms.dto.BlogPostResponseDTO;
 import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
 import de.aygul.minicms.exception.CategoryNotFoundException;
+import de.aygul.minicms.mapper.BlogPostMapper;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.mediator.BlogPostHistoryMediator;
 import de.aygul.minicms.model.*;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +23,7 @@ public class BlogPostService {
     private final BlogPostRepository blogPostRepository;
     private final ApplicationMediator applicationMediator;
     private final BlogPostHistoryMediator blogPostHistoryMediator;
+    private final BlogPostMapper blogPostMapper;
 
     public Long createBlogPost(BlogPostRequestDTO blogPostRequestDTO) {
         BlogPost blogPost = convertToEntity(blogPostRequestDTO);
@@ -50,7 +51,7 @@ public class BlogPostService {
     public BlogPostResponseDTO updateBlogPostPartial(Long id, String newTitle, String newBody) {
         BlogPost existingBlogPost = blogPostRepository.findById(id)
                                                       .orElseThrow(() -> new BlogPostIdNotFoundException(id));
-        BlogPostHistory blogPostHistory = convertBlogPostToHistory(existingBlogPost);
+        BlogPostHistory blogPostHistory = blogPostMapper.toBlogPostHistory(existingBlogPost);
         blogPostHistoryMediator.save(blogPostHistory);
         BlogPost updatedBlogPost = getUpdatedBlogPost(newTitle, newBody, existingBlogPost);
         blogPostRepository.save(updatedBlogPost);
@@ -101,18 +102,6 @@ public class BlogPostService {
                 blogPost.getPublicationDate(),
                 blogPost.getBlogPostStatus(),
                 categoryDTOs);
-    }
-
-    private BlogPostHistory convertBlogPostToHistory(BlogPost existingBlogPost) {
-        return new BlogPostHistory(null,
-                existingBlogPost.getId(),
-                existingBlogPost.getTitle(),
-                existingBlogPost.getBody(),
-                existingBlogPost.getAuthor(),
-                existingBlogPost.getPublicationDate(),
-                existingBlogPost.getBlogPostStatus(),
-                new ArrayList<>(existingBlogPost.getCategories()),
-                existingBlogPost.getVersion());
     }
 
     private BlogPost getUpdatedBlogPost(String newTitle, String newBody, BlogPost existingBlogPost) {

@@ -4,6 +4,7 @@ import de.aygul.minicms.dto.BlogPostRequestDTO;
 import de.aygul.minicms.dto.BlogPostResponseDTO;
 import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
+import de.aygul.minicms.mapper.BlogPostMapper;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.mediator.BlogPostHistoryMediator;
 import de.aygul.minicms.model.*;
@@ -25,8 +26,11 @@ class BlogPostServiceTest {
     private final BlogPostRepository mockedBlogPostRepository = mock(BlogPostRepository.class);
     private final ApplicationMediator mockedMediator = mock(ApplicationMediator.class);
     private final BlogPostHistoryMediator mockedBlogPostHistoryMediator = mock(BlogPostHistoryMediator.class);
+    private final BlogPostMapper mockedMapper = mock(BlogPostMapper.class);
     BlogPostService blogPostService = new BlogPostService(mockedBlogPostRepository,
-            mockedMediator, mockedBlogPostHistoryMediator);
+            mockedMediator,
+            mockedBlogPostHistoryMediator,
+            mockedMapper);
 
     @Test
     @DisplayName("Should create a blog post and return its ID")
@@ -58,13 +62,9 @@ class BlogPostServiceTest {
         when(mockedMediator.resolveCategoryByName("Science")).thenReturn(category2);
 
         BlogPost blogPost1 = new BlogPost(null,
-                "Title 1",
-                "Body 1",
-                "Author 1", LocalDate.now(), BlogPostStatus.DRAFT, List.of(category1), 1);
+                "Title 1", "Body 1", "Author 1", LocalDate.now(), BlogPostStatus.DRAFT, List.of(category1), 1);
         BlogPost blogPost2 = new BlogPost(null,
-                "Title 2",
-                "Body 2",
-                "Author 2", LocalDate.now(), BlogPostStatus.PUBLISHED, List.of(category2), 1);
+                "Title 2", "Body 2", "Author 2", LocalDate.now(), BlogPostStatus.PUBLISHED, List.of(category2), 1);
 
         when(mockedBlogPostRepository.findAll()).thenReturn(List.of(blogPost1, blogPost2));
 
@@ -104,9 +104,7 @@ class BlogPostServiceTest {
     void updateBlogPostPartialSuccess() {
 
         BlogPost existingBlogPost = new BlogPost(1L,
-                "Valid Title",
-                "Valid Body",
-                "Author", LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
+                "Valid Title", "Valid Body", "Author", LocalDate.now(), BlogPostStatus.DRAFT, new ArrayList<>(), 1);
 
         BlogPostResponseDTO expectedResponseDTO = new BlogPostResponseDTO(1L,
                 "New Title",
@@ -118,7 +116,7 @@ class BlogPostServiceTest {
 
         when(mockedBlogPostRepository.findById(1L)).thenReturn(Optional.of(existingBlogPost));
         when(mockedBlogPostRepository.save(existingBlogPost)).thenReturn(existingBlogPost);
-
+        when(mockedMapper.toBlogPostHistory(existingBlogPost)).thenReturn(new BlogPostHistory());
         BlogPostResponseDTO result = blogPostService.updateBlogPostPartial(1L, "New Title", "New Body");
         verify(mockedBlogPostHistoryMediator, times(1)).save(any(BlogPostHistory.class));
         verify(mockedBlogPostRepository, times(1)).save(any(BlogPost.class));
