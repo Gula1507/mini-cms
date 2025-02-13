@@ -13,7 +13,6 @@ import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,7 +25,7 @@ public class BlogPostService {
     private final BlogPostMapper blogPostMapper;
 
     public Long createBlogPost(BlogPostRequestDTO blogPostRequestDTO) {
-        BlogPost blogPost = convertToEntity(blogPostRequestDTO);
+        BlogPost blogPost = blogPostMapper.toEntity(blogPostRequestDTO, applicationMediator);
         blogPostRepository.save(blogPost);
         return blogPost.getId();
     }
@@ -73,22 +72,6 @@ public class BlogPostService {
                                                       .orElseThrow(() -> new BlogPostIdNotFoundException(id));
         existingBlogPost.setBlogPostStatus(blogPostStatus);
         blogPostRepository.save(existingBlogPost);
-    }
-
-    private BlogPost convertToEntity(BlogPostRequestDTO blogPostRequestDTO) {
-
-        List<Category> categories = blogPostRequestDTO.getCategoriesDTO().stream()
-                                                      .map(categoryDTO -> applicationMediator.resolveCategoryByName(
-                                                              categoryDTO.getCategoryName())).toList();
-
-        return new BlogPost(null,
-                blogPostRequestDTO.getTitle(),
-                blogPostRequestDTO.getBody(),
-                blogPostRequestDTO.getAuthor(),
-                LocalDate.now(),
-                BlogPostStatus.DRAFT,
-                categories,
-                1);
     }
 
     private BlogPostResponseDTO convertToResponseDTO(BlogPost blogPost) {
