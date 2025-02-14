@@ -1,6 +1,8 @@
 package de.aygul.minicms.mapper;
 
 import de.aygul.minicms.dto.BlogPostRequestDTO;
+import de.aygul.minicms.dto.BlogPostResponseDTO;
+import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.model.BlogPost;
 import de.aygul.minicms.model.BlogPostHistory;
@@ -35,5 +37,14 @@ public interface BlogPostMapper {
                                  .map(categoryDTO -> applicationMediator.resolveCategoryByName(categoryDTO.getCategoryName()))
                                  .toList();
     }
+
+    @Mapping(target = "categoriesDTO", expression = "java(convertCategoriesToDto(blogPost))")
+    BlogPostResponseDTO toResponseDTO(BlogPost blogPost);
+
+    default List<CategoryDTO> convertCategoriesToDto(BlogPost blogPost) {
+        return blogPost.getCategories().stream().map(this::toCategoryDTO).toList();
+    }
+
+    CategoryDTO toCategoryDTO(Category category);
 }
 

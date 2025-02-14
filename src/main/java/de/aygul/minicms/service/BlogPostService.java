@@ -2,13 +2,14 @@ package de.aygul.minicms.service;
 
 import de.aygul.minicms.dto.BlogPostRequestDTO;
 import de.aygul.minicms.dto.BlogPostResponseDTO;
-import de.aygul.minicms.dto.CategoryDTO;
 import de.aygul.minicms.exception.BlogPostIdNotFoundException;
 import de.aygul.minicms.exception.CategoryNotFoundException;
 import de.aygul.minicms.mapper.BlogPostMapper;
 import de.aygul.minicms.mediator.ApplicationMediator;
 import de.aygul.minicms.mediator.BlogPostHistoryMediator;
-import de.aygul.minicms.model.*;
+import de.aygul.minicms.model.BlogPost;
+import de.aygul.minicms.model.BlogPostHistory;
+import de.aygul.minicms.model.BlogPostStatus;
 import de.aygul.minicms.repository.BlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,12 +33,12 @@ public class BlogPostService {
 
     public List<BlogPostResponseDTO> getAllBlogPosts() {
         List<BlogPost> blogPosts = blogPostRepository.findAll();
-        return blogPosts.stream().map(this::convertToResponseDTO).toList();
+        return blogPosts.stream().map(blogPostMapper::toResponseDTO).toList();
     }
 
     public BlogPostResponseDTO getBlogPostById(Long id) {
         BlogPost blogPost = blogPostRepository.findById(id).orElseThrow(() -> new BlogPostIdNotFoundException(id));
-        return convertToResponseDTO(blogPost);
+        return blogPostMapper.toResponseDTO(blogPost);
     }
 
     public void deleteBlogPost(Long id) {
@@ -54,7 +55,7 @@ public class BlogPostService {
         blogPostHistoryMediator.save(blogPostHistory);
         BlogPost updatedBlogPost = getUpdatedBlogPost(newTitle, newBody, existingBlogPost);
         blogPostRepository.save(updatedBlogPost);
-        return convertToResponseDTO(updatedBlogPost);
+        return blogPostMapper.toResponseDTO(updatedBlogPost);
     }
 
     public List<BlogPostResponseDTO> getBlogPostsByCategory(String categoryName) {
@@ -64,7 +65,7 @@ public class BlogPostService {
             throw new CategoryNotFoundException("There is no category with name: " + categoryName);
         }
 
-        return filteredBlogPosts.stream().map(this::convertToResponseDTO).toList();
+        return filteredBlogPosts.stream().map(blogPostMapper::toResponseDTO).toList();
     }
 
     public void updateBlogPostStatus(Long id, BlogPostStatus blogPostStatus) {
@@ -72,19 +73,6 @@ public class BlogPostService {
                                                       .orElseThrow(() -> new BlogPostIdNotFoundException(id));
         existingBlogPost.setBlogPostStatus(blogPostStatus);
         blogPostRepository.save(existingBlogPost);
-    }
-
-    private BlogPostResponseDTO convertToResponseDTO(BlogPost blogPost) {
-        List<CategoryDTO> categoryDTOs = blogPost.getCategories().stream()
-                                                 .map(category -> new CategoryDTO(category.getCategoryName())).toList();
-
-        return new BlogPostResponseDTO(blogPost.getId(),
-                blogPost.getTitle(),
-                blogPost.getBody(),
-                blogPost.getAuthor(),
-                blogPost.getPublicationDate(),
-                blogPost.getBlogPostStatus(),
-                categoryDTOs);
     }
 
     private BlogPost getUpdatedBlogPost(String newTitle, String newBody, BlogPost existingBlogPost) {
