@@ -9,4 +9,6 @@ target/
 *.iml
 *.ipr
 
+.env
+
 
